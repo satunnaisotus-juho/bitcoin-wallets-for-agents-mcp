@@ -71,12 +71,15 @@ npm run lint
 | `blink_get_transactions` | Get transaction history with pagination |
 | `blink_get_webhooks` | List registered webhook endpoints |
 | `blink_create_btc_invoice` | Create Lightning invoice to receive BTC (amount in satoshis) |
+| `blink_pay_invoice` | Pay a BOLT11 Lightning invoice |
+| `blink_send_to_lnaddress` | Send sats to a Lightning address (e.g., user@blink.sv) |
+| `blink_send_to_lnurl` | Send sats via LNURL payRequest |
 
 ## Claude Code Configuration
 
-To use this MCP server with Claude Code, add the following to your `.mcp.json` file in your project directory:
+To use this MCP server with Claude Code, create a `.mcp.json` file in your project directory.
 
-**Local development (HTTP):**
+**Local development without authentication:**
 ```json
 {
   "mcpServers": {
@@ -88,7 +91,7 @@ To use this MCP server with Claude Code, add the following to your `.mcp.json` f
 }
 ```
 
-**Production with authentication (HTTPS):**
+**Production with authentication:**
 ```json
 {
   "mcpServers": {

@@ -82,6 +82,12 @@ export interface BlinkError {
   code?: string;
 }
 
+export type PaymentStatus = "SUCCESS" | "PENDING" | "ALREADY_PAID" | "FAILURE";
+
+export interface PaymentResult {
+  status: PaymentStatus;
+}
+
 export interface IBlinkService {
   getAccount(): Promise<BlinkAccount>;
   getTransactions(
@@ -95,4 +101,20 @@ export interface IBlinkService {
     amount: number,
     memo?: string
   ): Promise<BlinkInvoice>;
+  payInvoice(
+    walletId: string,
+    paymentRequest: string,
+    memo?: string
+  ): Promise<PaymentResult>;
+  sendToLnAddress(
+    walletId: string,
+    lnAddress: string,
+    amount: number,
+    memo?: string
+  ): Promise<PaymentResult>;
+  sendToLnurl(
+    walletId: string,
+    lnurl: string,
+    amount: number
+  ): Promise<PaymentResult>;
 }

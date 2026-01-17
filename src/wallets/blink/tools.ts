@@ -103,4 +103,86 @@ export function registerBlinkTools(server: McpServer): void {
       };
     }
   );
+
+  // blink_pay_invoice - Pay a BOLT11 Lightning invoice
+  server.tool(
+    "blink_pay_invoice",
+    "Pay a BOLT11 Lightning invoice from your wallet. Returns status: SUCCESS, PENDING, ALREADY_PAID, or FAILURE",
+    {
+      walletId: z.string().describe("Wallet ID to pay from"),
+      paymentRequest: z.string().describe("BOLT11 Lightning invoice (starts with lnbc...)"),
+      memo: z.string().optional().describe("Optional payment memo/note"),
+    },
+    async ({ walletId, paymentRequest, memo }) => {
+      console.log(`[${new Date().toISOString()}] Tool called: blink_pay_invoice (walletId: ${walletId})`);
+
+      const config = getBlinkConfig();
+      const blinkService = createBlinkService(config);
+      const result = await blinkService.payInvoice(walletId, paymentRequest, memo);
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify({ success: true, ...result }),
+          },
+        ],
+      };
+    }
+  );
+
+  // blink_send_to_lnaddress - Send to a Lightning address
+  server.tool(
+    "blink_send_to_lnaddress",
+    "Send satoshis to a Lightning address (e.g., user@blink.sv). Returns status: SUCCESS, PENDING, or FAILURE",
+    {
+      walletId: z.string().describe("Wallet ID to send from"),
+      lnAddress: z.string().describe("Lightning address (e.g., user@blink.sv)"),
+      amount: z.number().positive().describe("Amount in satoshis"),
+      memo: z.string().optional().describe("Optional payment memo/note"),
+    },
+    async ({ walletId, lnAddress, amount, memo }) => {
+      console.log(`[${new Date().toISOString()}] Tool called: blink_send_to_lnaddress (walletId: ${walletId}, lnAddress: ${lnAddress}, amount: ${amount})`);
+
+      const config = getBlinkConfig();
+      const blinkService = createBlinkService(config);
+      const result = await blinkService.sendToLnAddress(walletId, lnAddress, amount, memo);
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify({ success: true, ...result }),
+          },
+        ],
+      };
+    }
+  );
+
+  // blink_send_to_lnurl - Send via LNURL
+  server.tool(
+    "blink_send_to_lnurl",
+    "Send satoshis via LNURL payRequest. Returns status: SUCCESS, PENDING, or FAILURE",
+    {
+      walletId: z.string().describe("Wallet ID to send from"),
+      lnurl: z.string().describe("LNURL payRequest string (starts with LNURL1...)"),
+      amount: z.number().positive().describe("Amount in satoshis"),
+    },
+    async ({ walletId, lnurl, amount }) => {
+      console.log(`[${new Date().toISOString()}] Tool called: blink_send_to_lnurl (walletId: ${walletId}, amount: ${amount})`);
+
+      const config = getBlinkConfig();
+      const blinkService = createBlinkService(config);
+      const result = await blinkService.sendToLnurl(walletId, lnurl, amount);
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify({ success: true, ...result }),
+          },
+        ],
+      };
+    }
+  );
 }

@@ -61,6 +61,9 @@ src/
 | `blink_get_transactions` | Get paginated transaction history (params: walletId, first?, after?) |
 | `blink_get_webhooks` | List webhook endpoints |
 | `blink_create_btc_invoice` | Create Lightning invoice to receive BTC (params: walletId, amount, memo?) |
+| `blink_pay_invoice` | Pay a BOLT11 Lightning invoice (params: walletId, paymentRequest, memo?) |
+| `blink_send_to_lnaddress` | Send sats to Lightning address (params: walletId, lnAddress, amount, memo?) |
+| `blink_send_to_lnurl` | Send sats via LNURL (params: walletId, lnurl, amount) |
 
 ### Endpoints
 

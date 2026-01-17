@@ -9,6 +9,8 @@ import type {
   TransactionPageInfo,
   IBlinkService,
   InitiationVia,
+  PaymentResult,
+  PaymentStatus,
 } from "./types.js";
 
 export class BlinkServiceError extends Error {
@@ -114,6 +116,39 @@ const LN_INVOICE_CREATE_MUTATION = `
         paymentSecret
         satoshis
       }
+      errors {
+        message
+      }
+    }
+  }
+`;
+
+const LN_INVOICE_PAYMENT_SEND_MUTATION = `
+  mutation LnInvoicePaymentSend($input: LnInvoicePaymentInput!) {
+    lnInvoicePaymentSend(input: $input) {
+      status
+      errors {
+        message
+      }
+    }
+  }
+`;
+
+const LN_ADDRESS_PAYMENT_SEND_MUTATION = `
+  mutation LnAddressPaymentSend($input: LnAddressPaymentSendInput!) {
+    lnAddressPaymentSend(input: $input) {
+      status
+      errors {
+        message
+      }
+    }
+  }
+`;
+
+const LNURL_PAYMENT_SEND_MUTATION = `
+  mutation LnurlPaymentSend($input: LnurlPaymentSendInput!) {
+    lnurlPaymentSend(input: $input) {
+      status
       errors {
         message
       }
@@ -374,6 +409,122 @@ export class BlinkService implements IBlinkService {
     } catch (error) {
       if (error instanceof BlinkServiceError) throw error;
       throw new BlinkServiceError("Failed to create BTC invoice", error);
+    }
+  }
+
+  async payInvoice(
+    walletId: string,
+    paymentRequest: string,
+    memo?: string
+  ): Promise<PaymentResult> {
+    try {
+      interface LnInvoicePaymentSendResponse {
+        lnInvoicePaymentSend: {
+          status: PaymentStatus;
+          errors: Array<{ message: string }>;
+        };
+      }
+
+      const data = await this.graphql<LnInvoicePaymentSendResponse>(
+        LN_INVOICE_PAYMENT_SEND_MUTATION,
+        {
+          input: {
+            walletId,
+            paymentRequest,
+            ...(memo && { memo }),
+          },
+        }
+      );
+
+      const result = data.lnInvoicePaymentSend;
+
+      if (result.errors && result.errors.length > 0) {
+        const errorMessages = result.errors.map((e) => e.message).join("; ");
+        throw new BlinkServiceError(`Payment failed: ${errorMessages}`);
+      }
+
+      return { status: result.status };
+    } catch (error) {
+      if (error instanceof BlinkServiceError) throw error;
+      throw new BlinkServiceError("Failed to pay invoice", error);
+    }
+  }
+
+  async sendToLnAddress(
+    walletId: string,
+    lnAddress: string,
+    amount: number,
+    memo?: string
+  ): Promise<PaymentResult> {
+    try {
+      interface LnAddressPaymentSendResponse {
+        lnAddressPaymentSend: {
+          status: PaymentStatus;
+          errors: Array<{ message: string }>;
+        };
+      }
+
+      const data = await this.graphql<LnAddressPaymentSendResponse>(
+        LN_ADDRESS_PAYMENT_SEND_MUTATION,
+        {
+          input: {
+            walletId,
+            lnAddress,
+            amount,
+            ...(memo && { memo }),
+          },
+        }
+      );
+
+      const result = data.lnAddressPaymentSend;
+
+      if (result.errors && result.errors.length > 0) {
+        const errorMessages = result.errors.map((e) => e.message).join("; ");
+        throw new BlinkServiceError(`Payment to Lightning address failed: ${errorMessages}`);
+      }
+
+      return { status: result.status };
+    } catch (error) {
+      if (error instanceof BlinkServiceError) throw error;
+      throw new BlinkServiceError("Failed to send to Lightning address", error);
+    }
+  }
+
+  async sendToLnurl(
+    walletId: string,
+    lnurl: string,
+    amount: number
+  ): Promise<PaymentResult> {
+    try {
+      interface LnurlPaymentSendResponse {
+        lnurlPaymentSend: {
+          status: PaymentStatus;
+          errors: Array<{ message: string }>;
+        };
+      }
+
+      const data = await this.graphql<LnurlPaymentSendResponse>(
+        LNURL_PAYMENT_SEND_MUTATION,
+        {
+          input: {
+            walletId,
+            lnurl,
+            amount,
+          },
+        }
+      );
+
+      const result = data.lnurlPaymentSend;
+
+      if (result.errors && result.errors.length > 0) {
+        const errorMessages = result.errors.map((e) => e.message).join("; ");
+        throw new BlinkServiceError(`LNURL payment failed: ${errorMessages}`);
+      }
+
+      return { status: result.status };
+    } catch (error) {
+      if (error instanceof BlinkServiceError) throw error;
+      throw new BlinkServiceError("Failed to send via LNURL", error);
     }
   }
 }
