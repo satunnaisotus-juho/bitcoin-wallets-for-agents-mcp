@@ -60,6 +60,7 @@ src/
 | `blink_get_account` | Get wallet IDs and balances |
 | `blink_get_transactions` | Get paginated transaction history (params: walletId, first?, after?) |
 | `blink_get_webhooks` | List webhook endpoints |
+| `blink_create_btc_invoice` | Create Lightning invoice to receive BTC (params: walletId, amount, memo?) |
 
 ### Endpoints
 

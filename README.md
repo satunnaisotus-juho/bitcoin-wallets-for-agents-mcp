@@ -70,6 +70,38 @@ npm run lint
 | `blink_get_account` | Get Blink wallet IDs and balances (BTC in satoshis, USD in cents) |
 | `blink_get_transactions` | Get transaction history with pagination |
 | `blink_get_webhooks` | List registered webhook endpoints |
+| `blink_create_btc_invoice` | Create Lightning invoice to receive BTC (amount in satoshis) |
+
+## Claude Code Configuration
+
+To use this MCP server with Claude Code, add the following to your `.mcp.json` file in your project directory:
+
+**Local development (HTTP):**
+```json
+{
+  "mcpServers": {
+    "bitcoin-wallet": {
+      "type": "http",
+      "url": "http://localhost:3000/mcp"
+    }
+  }
+}
+```
+
+**Production with authentication (HTTPS):**
+```json
+{
+  "mcpServers": {
+    "bitcoin-wallet": {
+      "type": "http",
+      "url": "https://mcp.example.com/mcp",
+      "headers": {
+        "x-api-key": "your-secret-key"
+      }
+    }
+  }
+}
+```
 
 ## HTTP vs HTTPS Mode
 
