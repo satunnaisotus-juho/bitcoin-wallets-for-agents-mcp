@@ -1,6 +1,6 @@
 # bitcoin-wallets-for-agents-mcp
 
-MCP server exposing Bitcoin wallet operations for AI agents. Supports multiple wallet backends.
+MCP server exposing Bitcoin wallet operations for AI agents. Supports the Blink (https://www.blink.sv/) wallet. Offers an extendable framework.
 
 ## Requirements
 
