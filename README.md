@@ -17,7 +17,7 @@ sudo apt install -y git curl nodejs npm
 ## Installation
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/satunnaisotus-juho/bitcoin-wallets-for-agents-mcp.git
 cd bitcoin-wallets-for-agents-mcp
 ./bin/setup.sh
 ```
