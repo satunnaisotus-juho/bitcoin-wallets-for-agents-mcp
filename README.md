@@ -4,8 +4,15 @@ MCP server exposing Bitcoin wallet operations for AI agents. Supports multiple w
 
 ## Requirements
 
-- Node.js 20+
+- Node.js 18+
 - npm
+
+### Ubuntu 24.04 LTS
+
+```bash
+sudo apt update
+sudo apt install -y git curl nodejs npm
+```
 
 ## Installation
 

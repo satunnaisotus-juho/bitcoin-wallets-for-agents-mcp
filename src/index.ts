@@ -1,11 +1,15 @@
 import "dotenv/config";
 import path from "path";
+import { fileURLToPath } from "url";
 import express from "express";
 import type { Request, Response, NextFunction } from "express";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { getMcpServerConfig } from "./config/index.js";
 import { registerBlinkTools } from "./wallets/blink/tools.js";
+
+// ESM __dirname equivalent
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Configuration
 const config = getMcpServerConfig();
@@ -80,8 +84,8 @@ async function main() {
     let certObtained = false;
 
     const gl = greenlock.init({
-      packageRoot: path.join(import.meta.dirname, '..'),
-      configDir: path.join(import.meta.dirname, '../greenlock.d'),
+      packageRoot: path.join(__dirname, '..'),
+      configDir: path.join(__dirname, '../greenlock.d'),
       maintainerEmail: httpsConfig.email,
       cluster: false,
       staging: httpsConfig.staging,

@@ -47,6 +47,8 @@ src/
 
 **Currency Units**: BTC amounts in satoshis, USD amounts in cents.
 
+**ESM __dirname**: Uses `fileURLToPath(import.meta.url)` pattern for Node 18 compatibility (not `import.meta.dirname` which requires Node 20+).
+
 **Server Modes**:
 - HTTP mode (no `MCP_DOMAIN`): Simple Express server on `MCP_PORT`
 - HTTPS mode (with `MCP_DOMAIN`): greenlock-express handles Let's Encrypt certificates
