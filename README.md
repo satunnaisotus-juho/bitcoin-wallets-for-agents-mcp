@@ -1,0 +1,104 @@
+# bitcoin-wallets-for-agents-mcp
+
+MCP server exposing Bitcoin wallet operations for AI agents. Supports multiple wallet backends.
+
+## Requirements
+
+- Node.js 20+
+- npm
+
+## Installation
+
+```bash
+git clone <repo-url>
+cd bitcoin-wallets-for-agents-mcp
+./bin/setup.sh
+```
+
+The setup script will:
+1. Install npm dependencies
+2. Prompt for configuration values
+3. Create `.env` file
+4. Configure Let's Encrypt (if HTTPS enabled)
+
+## Configuration
+
+Configuration is stored in `.env` (see `.env.example`).
+
+**MCP Server:**
+- `MCP_PORT` - HTTP port (default: 3000)
+- `MCP_API_KEY` - API key for authentication (optional)
+- `MCP_DOMAIN` - Domain for HTTPS (optional, enables Let's Encrypt)
+- `MCP_ACME_EMAIL` - Email for Let's Encrypt (required when MCP_DOMAIN is set)
+- `MCP_HTTPS_PORT` - HTTPS port (default: 443)
+- `MCP_ACME_STAGING` - Use Let's Encrypt staging (default: false)
+
+**Blink Wallet:**
+- `BLINK_API_KEY` - Blink API key (format: blink_xxx, get from dashboard.blink.sv)
+- `BLINK_ENDPOINT` - Blink GraphQL endpoint (default: https://api.blink.sv/graphql)
+
+## Usage
+
+```bash
+# Start server (development)
+npm run dev
+
+# Start server (production)
+npm run start
+
+# Build
+npm run build
+
+# Type check
+npm run typecheck
+
+# Lint
+npm run lint
+```
+
+## MCP Tools
+
+| Tool | Description |
+|------|-------------|
+| `blink_get_account` | Get Blink wallet IDs and balances (BTC in satoshis, USD in cents) |
+| `blink_get_transactions` | Get transaction history with pagination |
+| `blink_get_webhooks` | List registered webhook endpoints |
+
+## HTTP vs HTTPS Mode
+
+**HTTP Mode (Local Development):**
+```bash
+MCP_PORT=3000
+npm run dev
+```
+
+**HTTPS Mode (Production):**
+```bash
+MCP_DOMAIN=mcp.example.com
+MCP_ACME_EMAIL=admin@example.com
+MCP_API_KEY=your-secret-key
+npm run dev
+```
+
+Requirements for HTTPS:
+- Port 80 accessible (ACME HTTP-01 challenge)
+- Port 443 accessible (HTTPS)
+- Domain pointing to server
+
+## Adding New Wallet Backends
+
+The architecture supports adding more wallets. Create a new directory under `src/wallets/` with:
+- `types.ts` - Type definitions for the wallet
+- `service.ts` - Service implementation
+- `tools.ts` - MCP tool registrations
+
+Then import and register the tools in `src/index.ts`.
+
+## Development
+
+```bash
+npm run dev        # Run with hot reload
+npm run build      # Build for production
+npm run typecheck  # Type-check without emitting
+npm run lint       # Lint code
+```

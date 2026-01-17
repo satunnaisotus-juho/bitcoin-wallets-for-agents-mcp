@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+
+# HTTPS/Greenlock configuration
+greenlock.d/
+
+# Logs
+*.log
+npm-debug.log*
