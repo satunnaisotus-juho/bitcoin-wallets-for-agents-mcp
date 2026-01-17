@@ -75,6 +75,27 @@ npm run lint
 | `blink_send_to_lnaddress` | Send sats to a Lightning address (e.g., user@blink.sv) |
 | `blink_send_to_lnurl` | Send sats via LNURL payRequest |
 
+## HTTP vs HTTPS Mode
+
+**HTTP Mode (Local Development):**
+```bash
+MCP_PORT=3000
+npm run dev
+```
+
+**HTTPS Mode (Production):**
+```bash
+MCP_DOMAIN=mcp.example.com
+MCP_ACME_EMAIL=admin@example.com
+MCP_API_KEY=your-secret-key
+npm run dev
+```
+
+Requirements for HTTPS:
+- Port 80 accessible (ACME HTTP-01 challenge)
+- Port 443 accessible (HTTPS)
+- Domain pointing to server
+
 ## Claude Code Configuration
 
 To use this MCP server with Claude Code, create a `.mcp.json` file in your project directory.
@@ -105,27 +126,6 @@ To use this MCP server with Claude Code, create a `.mcp.json` file in your proje
   }
 }
 ```
-
-## HTTP vs HTTPS Mode
-
-**HTTP Mode (Local Development):**
-```bash
-MCP_PORT=3000
-npm run dev
-```
-
-**HTTPS Mode (Production):**
-```bash
-MCP_DOMAIN=mcp.example.com
-MCP_ACME_EMAIL=admin@example.com
-MCP_API_KEY=your-secret-key
-npm run dev
-```
-
-Requirements for HTTPS:
-- Port 80 accessible (ACME HTTP-01 challenge)
-- Port 443 accessible (HTTPS)
-- Domain pointing to server
 
 ## Adding New Wallet Backends
 
