@@ -69,6 +69,13 @@ export interface BlinkWebhook {
   url: string;
 }
 
+export interface BlinkInvoice {
+  paymentRequest: string;
+  paymentHash: string;
+  paymentSecret: string;
+  satoshis: number;
+}
+
 export interface BlinkError {
   message: string;
   path?: string[];
@@ -83,4 +90,9 @@ export interface IBlinkService {
     after?: string
   ): Promise<TransactionConnection>;
   getWebhooks(): Promise<BlinkWebhook[]>;
+  createBtcInvoice(
+    walletId: string,
+    amount: number,
+    memo?: string
+  ): Promise<BlinkInvoice>;
 }

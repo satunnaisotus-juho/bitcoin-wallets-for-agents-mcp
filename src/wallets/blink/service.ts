@@ -4,6 +4,7 @@ import type {
   BlinkWallet,
   BlinkTransaction,
   BlinkWebhook,
+  BlinkInvoice,
   TransactionConnection,
   TransactionPageInfo,
   IBlinkService,
@@ -99,6 +100,22 @@ const WEBHOOKS_QUERY = `
           id
           url
         }
+      }
+    }
+  }
+`;
+
+const LN_INVOICE_CREATE_MUTATION = `
+  mutation LnInvoiceCreate($input: LnInvoiceCreateInput!) {
+    lnInvoiceCreate(input: $input) {
+      invoice {
+        paymentRequest
+        paymentHash
+        paymentSecret
+        satoshis
+      }
+      errors {
+        message
       }
     }
   }
@@ -305,6 +322,58 @@ export class BlinkService implements IBlinkService {
     } catch (error) {
       if (error instanceof BlinkServiceError) throw error;
       throw new BlinkServiceError("Failed to get webhooks from Blink", error);
+    }
+  }
+
+  async createBtcInvoice(
+    walletId: string,
+    amount: number,
+    memo?: string
+  ): Promise<BlinkInvoice> {
+    try {
+      interface LnInvoiceCreateResponse {
+        lnInvoiceCreate: {
+          invoice: {
+            paymentRequest: string;
+            paymentHash: string;
+            paymentSecret: string;
+            satoshis: number;
+          } | null;
+          errors: Array<{ message: string }>;
+        };
+      }
+
+      const data = await this.graphql<LnInvoiceCreateResponse>(
+        LN_INVOICE_CREATE_MUTATION,
+        {
+          input: {
+            walletId,
+            amount,
+            ...(memo && { memo }),
+          },
+        }
+      );
+
+      const result = data.lnInvoiceCreate;
+
+      if (result.errors && result.errors.length > 0) {
+        const errorMessages = result.errors.map((e) => e.message).join("; ");
+        throw new BlinkServiceError(`Invoice creation failed: ${errorMessages}`);
+      }
+
+      if (!result.invoice) {
+        throw new BlinkServiceError("Invoice creation returned no invoice");
+      }
+
+      return {
+        paymentRequest: result.invoice.paymentRequest,
+        paymentHash: result.invoice.paymentHash,
+        paymentSecret: result.invoice.paymentSecret,
+        satoshis: result.invoice.satoshis,
+      };
+    } catch (error) {
+      if (error instanceof BlinkServiceError) throw error;
+      throw new BlinkServiceError("Failed to create BTC invoice", error);
     }
   }
 }

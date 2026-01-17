@@ -76,4 +76,31 @@ export function registerBlinkTools(server: McpServer): void {
       };
     }
   );
+
+  // blink_create_btc_invoice - Create Lightning invoice to receive BTC
+  server.tool(
+    "blink_create_btc_invoice",
+    "Create a Lightning invoice to receive BTC payments",
+    {
+      walletId: z.string().describe("BTC wallet ID to receive payment"),
+      amount: z.number().positive().describe("Amount in satoshis"),
+      memo: z.string().optional().describe("Optional invoice description/memo"),
+    },
+    async ({ walletId, amount, memo }) => {
+      console.log(`[${new Date().toISOString()}] Tool called: blink_create_btc_invoice (walletId: ${walletId}, amount: ${amount})`);
+
+      const config = getBlinkConfig();
+      const blinkService = createBlinkService(config);
+      const invoice = await blinkService.createBtcInvoice(walletId, amount, memo);
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify({ success: true, invoice }),
+          },
+        ],
+      };
+    }
+  );
 }
