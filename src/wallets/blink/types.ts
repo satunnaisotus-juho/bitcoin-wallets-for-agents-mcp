@@ -88,6 +88,22 @@ export interface PaymentResult {
   status: PaymentStatus;
 }
 
+export type HealthStatus = 'healthy' | 'degraded' | 'unhealthy';
+
+export interface LayerHealth {
+  available: boolean;
+  error?: string;
+}
+
+export interface HealthCheckResult {
+  status: HealthStatus;
+  layers: {
+    lightning: LayerHealth;
+    onchain: LayerHealth;
+    liquid: LayerHealth;
+  };
+}
+
 export interface IBlinkService {
   getAccount(): Promise<BlinkAccount>;
   getTransactions(
